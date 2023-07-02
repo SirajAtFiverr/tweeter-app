@@ -1,0 +1,61 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: aqua;
+}
+
+#app{
+    width: 300px;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: white;
+    font-family: 'Oxygen', sans-serif;
+}
+
+header h1{
+    color: #0F8CDF;
+    font-size: 22px;
+}
+
+.tweet-input-area{
+    margin: 20px 0;
+}
+
+.profile-pic{
+    float: left;
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+#tweet-input{
+    resize: none;
+    border: none;
+    background-color: white;
+    margin-top: 15px;
+    font-size: 17px;
+    height: 60px;
+}
+
+#tweet-input:focus{
+    outline: none;
+}
+
+.tweet-btn{
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 5px;
+    background-color: #0F8CDF;
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+}
+
+hr{
+    margin: 20px 0;
+}
