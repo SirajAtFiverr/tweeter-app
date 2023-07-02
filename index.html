@@ -3,11 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+
     <title>Siraj's Tweeter</title>
 </head>
 <body>
 
-    Siraj's Tweeter
-    
+    <div id="app">
+
+        <header>
+            <h1>Siraj's Tweeter</h1>
+        </header>
+
+        <main>
+            <section class="add-new-tweet-section">
+                <div class="tweet-input-area">
+                    <img src="images/scrimbalogo.png" class="profile-pic">
+                    <textarea placeholder="What's happening?" id="tweet-input"></textarea>
+                </div>
+                <button class="tweet-btn">Tweet</button>
+            </section>
+
+            <section class="tweets-section">
+                <!-- Tweets here: --> 
+            </section>
+        </main>
+
+    </div>
+
+    <script src="script.js" type="module"></script>
 </body>
 </html>
