@@ -9,7 +9,7 @@ body{
 }
 
 #app{
-    width: 300px;
+    width: 305px;
     margin: 0 auto;
     padding: 15px;
     background-color: white;
@@ -56,6 +56,37 @@ header h1{
     font-size: 18px;
 }
 
-hr{
+.separator{
     margin: 20px 0;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.tweets-section{
+    font-size: 14px;
+}
+
+.tweet{
+    background-color: white;
+    display: flex;
+    align-items: start;
+}
+
+.tweet-text{
+    margin: 15px 0;
+}
+
+.tweet-options{
+    display: flex;
+    justify-content: space-between;
+}
+
+.comments{
+    width: 80%;
+    margin-left: auto;
+}
+
+.comment{
+    display: flex;
+    align-items: start;
 }
