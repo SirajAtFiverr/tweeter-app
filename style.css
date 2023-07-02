@@ -10,7 +10,7 @@ body{
 
 #app{
     width: 305px;
-    margin: 0 auto;
+    margin: 10px auto;
     padding: 15px;
     background-color: white;
     font-family: 'Oxygen', sans-serif;
@@ -73,12 +73,17 @@ header h1{
 }
 
 .tweet-text{
+    min-width: 200px;
+}
+
+.comment-text, .tweet-text{
     margin: 15px 0;
 }
 
 .tweet-options{
     display: flex;
     justify-content: space-between;
+    user-select: none;
 }
 
 .comments{
@@ -86,7 +91,16 @@ header h1{
     margin-left: auto;
 }
 
+.hide-comments{
+    display: none;
+}
+
 .comment{
     display: flex;
     align-items: start;
+}
+
+i{
+    cursor: pointer;
+    font-size: 16px;
 }
