@@ -1,18 +1,12 @@
+import {authenticateUser, tweetsInDB, addRemoveFromDB, deleteTweetFromDB, addTweetToDB, addTweetReplay} from '/database.js';
+import { onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-import {tweetsData} from '/data.js';
-import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-import {authenticateUser} from '/database.js';
 
 const tweetSectionEl = document.querySelector(".tweets-section");
 const dialogBoxEl = document.getElementById("dialog-box");
 const form = document.querySelector("form");
 
 let userName = null;
-
-if(document.readyState === 'interactive'){
-    dialogBoxEl.style.display = "block";
-}
-
 
 
 // ######################################## EVENT LISTENER ########################################
@@ -29,14 +23,17 @@ form.addEventListener("submit", (event) =>{
         dialogBoxEl.style.display = "none";
         userName = dataObj.get('user-name').toLowerCase().trim();
         alert("Welcome to Siraj's Tweeter");
-        renderTweets();
+
+        onValue(tweetsInDB, (snapshot)=>{
+            if(!snapshot.exists()) return;
+            renderTweets(snapshot.val());
+        });
     });
 });
 
 document.addEventListener("click", (event) =>{
 
     if(!userName) return;
-    else dialogBoxEl.style.display = "none";
 
     if(event.target.dataset.comment){
         const commentsEl = document.getElementById(event.target.dataset.comment);
@@ -45,28 +42,27 @@ document.addEventListener("click", (event) =>{
     }
 
     if(event.target.dataset.like){
-        console.log("like tweet");
+        addRemoveFromDB(userName, event.target.dataset.like, "likes");
         return;
     }
 
     if(event.target.dataset.retweet){
-        console.log("retweet");
+        addRemoveFromDB(userName, event.target.dataset.retweet, "retweets");
         return;
     }
 
     if(event.target.dataset.del){
-        console.log("delete tweet");
+        deleteTweetFromDB(userName, event.target.dataset.del);
         return;
     }
     
     if(event.target.classList.contains("tweet-btn")){
-        publishTweet();
+        publishTweet(userName);
         return;
     }
 
     if(event.target.dataset.replay){
-        // console.log(event.target.dataset.replay)
-        addReplay(event.target.dataset.replay);
+        addReplay(userName, event.target.dataset.replay);
         return;
     }
 });
@@ -78,17 +74,28 @@ document.addEventListener("click", (event) =>{
 
 // ################################## TWEEET RENDERING FUNCTIONS  ##################################
 
-function renderTweets(){
+
+function renderTweets(tweets){
     clearTweets();
-    for (const tweet of tweetsData) {
-        renderTweet(tweet);
+    for (let tweet of Object.entries(tweets)) {
+        renderTweet(tweet[0], tweet[1]);
     }
 }
 
+function renderTweet(tweetID, tweetData){
 
-function renderTweet(tweetData){
+    let tweetReplies = [];
+    try{
+        tweetReplies = Object.values(tweetData.replies)
+    }catch{}
 
-    const comments = generateCommentsHTML(tweetData.replies, tweetData.uuid);
+    const comments = generateCommentsHTML(tweetReplies, tweetID);
+    let likedUtitliyClass = null;
+    let heartShape = 'fa-regular';
+    let retweetedUtitliyClass = null;
+
+    if(JSON.parse(tweetData.likes).indexOf(userName) != -1) likedUtitliyClass = 'color-red', heartShape = 'fa-solid';
+    if(JSON.parse(tweetData.retweets).indexOf(userName) != -1) retweetedUtitliyClass = "color-blue";
 
     const tweet = `
                     <div class="separator"></div>
@@ -96,7 +103,7 @@ function renderTweet(tweetData){
                         <img src="${tweetData.profilePic}" class="profile-pic">
                         <section>
 
-                            <span class="user-name">${tweetData.handle}</span>
+                            <span class="user-name">@${tweetData.handle}</span>
                             <p class="tweet-text">
                                 ${tweetData.tweetText}
                             </p>
@@ -104,29 +111,29 @@ function renderTweet(tweetData){
                             <section class="tweet-options">
                                 <span>
                                     <i
-                                     class="fa-regular fa-comment-dots"
-                                     data-comment="${tweetData.uuid}"
+                                     class="fa-regular fa-comment-dots "
+                                     data-comment="${tweetID}"
                                     ></i>
-                                    ${tweetData.replies.length}
+                                    ${tweetReplies.length}
                                 </span>
                                 <span>
                                     <i 
-                                    class="fa-regular fa-heart"
-                                    data-like="${tweetData.uuid}"
+                                    class="${heartShape} fa-heart ${likedUtitliyClass}"
+                                    data-like="${tweetID}"
                                     ></i>
-                                    ${tweetData.likes}
+                                    ${JSON.parse(tweetData.likes).length}
                                 </span>
                                 <span>
                                     <i
-                                     class="fa-solid fa-retweet"
-                                     data-retweet="${tweetData.uuid}"
+                                     class="fa-solid fa-retweet ${retweetedUtitliyClass}"
+                                     data-retweet="${tweetID}"
                                      ></i>
-                                    ${tweetData.retweets}
+                                    ${JSON.parse(tweetData.retweets).length}
                                 </span>
                                 <span>
                                     <i
                                      class="fa-regular fa-trash-can"
-                                     data-del="${tweetData.uuid}"
+                                     data-del="${tweetID}"
                                      ></i>
                                 </span>
                             </section>
@@ -134,7 +141,7 @@ function renderTweet(tweetData){
                         </section>
                     </div>
 
-                    <section class="comments hide-comments" id="${tweetData.uuid}">
+                    <section class="comments hide-comments" id="${tweetID}">
                         ${comments}
                     </section>
                   `
@@ -164,7 +171,7 @@ function generateCommentsHTML(commnets, id){
                                 <img src="${comment.profilePic}" class="profile-pic">
                                 <section>
 
-                                    <span class="user-name">${comment.handle}</span>
+                                    <span class="user-name">@${comment.handle}</span>
                                     <p class="comment-text">
                                         ${comment.tweetText}
                                     </p>
@@ -183,42 +190,23 @@ function generateCommentsHTML(commnets, id){
 
 
 
+// ######################################## TWEET AND REPLAY ########################################
 
-function publishTweet(){
+
+function publishTweet(userName){
     const tweetTextArea = document.getElementById("tweet-input");
     if(!tweetTextArea.value) return;
 
-    const tweetObj = {
-        handle: '@' + userName,
-        profilePic: `images/scrimbalogo.png`,
-        likes: 0,
-        retweets: 0,
-        tweetText: tweetTextArea.value,
-        replies: [],
-        isLiked: false,
-        isRetweeted: false,
-        uuid: uuidv4(),
-    }
-
-    tweetsData.unshift(tweetObj);
-    renderTweets();
+    addTweetToDB(userName, tweetTextArea.value);
     clearTweetTextArea(tweetTextArea);
 }
 
-function addReplay(uuid){
-    const tweetTextArea = document.querySelector(`textarea[id='${uuid}']`);
+function addReplay(userName, tweetID){
+    const tweetTextArea = document.querySelector(`textarea[id='${tweetID}']`);
     if(!tweetTextArea.value) return;
 
-    const tweet = tweetsData.filter((tweet) => tweet.uuid == uuid)[0];
-    const replayObj = {
-        handle: '@' + userName,
-        profilePic: `images/scrimbalogo.png`,
-        tweetText: tweetTextArea.value
-    }
-
-    tweet.replies.unshift(replayObj);
-    renderTweets();
-    showComments(uuid);
+    addTweetReplay(tweetID, userName, tweetTextArea.value);
+    showComments(tweetID);
     clearTweetTextArea(tweetTextArea);
 }
 
@@ -227,8 +215,10 @@ function showComments(id){
     commentsEl.classList.toggle("hide-comments");
 }
 
+// ##################################### TWEET AND REPLAY END ######################################
 
-// renderTweets();
+
+
 
 
 // ######################################## CLEAR FUNCTIONS ########################################

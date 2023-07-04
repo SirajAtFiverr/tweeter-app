@@ -23,12 +23,9 @@ header h1{
 
 .tweet-input-area{
     margin: 20px 0;
-    /* align-items: center; */
-    /* border: 1px solid black; */
 }
 
 .profile-pic{
-
     width: 50px;
     border-radius: 50%;
     margin-right: 12px;
@@ -125,7 +122,6 @@ i{
 }
 
 #dialog-box{
-    display: none;
     position: fixed;
     background-color: white;
     top: 0;
@@ -185,4 +181,12 @@ input:focus{
     color: white;
     font-size: 12px;
     background-color: #0F8CDF;
+}
+
+.color-blue{
+    color: #0F8CDF;
+}
+
+.color-red{
+    color: red;
 }

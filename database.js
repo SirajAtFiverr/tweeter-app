@@ -1,5 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { onValue, getDatabase, ref, get, set, push, child, update, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import {getDatabase, ref, get, set, push, child, update, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+
+// #################################### DATABASE CONFIGURATION ####################################
 
 const firebaseConfig = {
     apiKey: "AIzaSyAz-z-io0xdivckXvaPXBZQDEDIbi3fxGc",
@@ -16,7 +19,18 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const usersInDB = ref(db, "users");
-const tweetsInDB = ref(db, "tweets");
+export const tweetsInDB = ref(db, "tweets");
+
+// ################################### DATABASE CONFIGURATION END ##################################
+
+
+
+
+
+
+// ########################################## USER SECTION #########################################
+
+
 
 function addUserToDB(userName, password){
     console.log(userName);
@@ -41,7 +55,9 @@ export function authenticateUser(userName, password){
 
         // if password is available and userName is in the usersOBJ
         if(password && Object.hasOwn(users, userName)){
-            if(users[userName] === password)return true;
+            // Matching password
+            if(users[userName] === password) return true;
+            // if password doesn't match
             alert("Invalid Password Entered");
             return false;
         }
@@ -72,41 +88,61 @@ function generatePassword() {
     return retVal;
 }
 
-function addTweetToDB(userName, tweetText)
+
+// ######################################## USER SECTION END ########################################
+
+
+
+
+
+// ########################################## TWEET SECTION #########################################
+
+export function addTweetToDB(userName, tweetText)
 {
+    const profilePic = "images/scrimbalogo.png";
+    if(userName === 'siraj') profilePic = "https://media.giphy.com/media/3oKIPcYayla0bcQr3q/giphy.gif";
+
     const tweetObj = {
         handle: userName,
-        profilePic: `images/scrimbalogo.png`,
+        profilePic: profilePic,
         likes: JSON.stringify([]),
         retweets: JSON.stringify([]),
         tweetText: tweetText,
-        replies:[
-        {
-            handle: `@StackOverflower ☣️`,
-            profilePic: `images/overflow.png`,
-            tweetText: `No. Obviosuly not. Go get a job in McDonald's.`,
-        }
-        ],
+        replies: []
     }
 
     push(tweetsInDB, tweetObj);
 }
 
-// addTweetToDB("siraj", "tweeeet... textttt....")
+export function addTweetReplay(tweetID, userName, replayText){
 
-function addTweetReplay(tweetID, userName, replayText){
+    const profilePic = "images/scrimbalogo.png";
+    if(userName === 'siraj') profilePic = "https://media.giphy.com/media/3oKIPcYayla0bcQr3q/giphy.gif";
+
     const replayObj = {
         handle: userName,
-        profilePic: `images/scrimbalogo.png`,
+        profilePic: profilePic,
         tweetText: replayText
     }
 
     push(child(tweetsInDB, `${tweetID}/replies`), replayObj);
 }
 
+export function deleteTweetFromDB(userName, tweetID){
+
+    get(child(tweetsInDB, `${tweetID}/handle`)).then((data)=>{
+
+        if(data.val() === userName){
+            if(confirm("Are you really want to delete this tweet ???")) remove(ref(db, "tweets/"+tweetID));
+            return;
+        }
+
+        alert("How can you delete this tweet ?? \nIt's not your.")
+    });
+}
 
 
-function addRemoveFromDB(userName, tweetID, likesOrRetweeets){
+export function addRemoveFromDB(userName, tweetID, likesOrRetweeets){
     get(child(tweetsInDB, `${tweetID}/${likesOrRetweeets}`)).then((data)=>{
 
         let users = JSON.parse(data.val());
@@ -121,25 +157,4 @@ function addRemoveFromDB(userName, tweetID, likesOrRetweeets){
     });
 }
 
-
-function deleteTweetFromDB(userName, tweetID){
-
-    get(child(tweetsInDB, `${tweetID}/handle`)).then((data)=>{
-
-        if(data.val() === userName){
-            if(confirm("Are you really want to delete this tweet ???")) remove(ref(db, "tweets/"+tweetID));
-            return;
-        }
-
-        alert("How can you delete this tweet ?? \n It's not your.")
-    });
-}
-
-// deleteTweetFromDB('siraj', '-NZUU_dVz-W9ki_Yxu17')
-
-// addRemoveFromDB('siraj', '-NZUOXF0VkfIH5cw0SI6', 'retweets')
-
-
-
-// addTweetReplay("-NZUAKmrVTvTvU2N-Z3w", "siraj", "twet text")
-// addTweetToDB("siraj", "this is a tweet") 
+// ######################################### TWEET SECTION END #######################################
