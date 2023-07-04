@@ -1,12 +1,42 @@
 
 import {tweetsData} from '/data.js';
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
+import {authenticateUser} from '/database.js';
 
 const tweetSectionEl = document.querySelector(".tweets-section");
+const dialogBoxEl = document.getElementById("dialog-box");
+const form = document.querySelector("form");
+
+let userName = null;
+
+if(document.readyState === 'interactive'){
+    dialogBoxEl.style.display = "block";
+}
+
+
 
 // ######################################## EVENT LISTENER ########################################
 
+
+form.addEventListener("submit", (event) =>{
+    event.preventDefault();
+
+    const dataObj = new FormData(event.target);
+    authenticateUser(dataObj.get('user-name').toLowerCase().trim(), dataObj.get('password')).
+    then((state)=>{
+        if(!state) return;
+
+        dialogBoxEl.style.display = "none";
+        userName = dataObj.get('user-name').toLowerCase().trim();
+        alert("Welcome to Siraj's Tweeter");
+        renderTweets();
+    });
+});
+
 document.addEventListener("click", (event) =>{
+
+    if(!userName) return;
+    else dialogBoxEl.style.display = "none";
 
     if(event.target.dataset.comment){
         const commentsEl = document.getElementById(event.target.dataset.comment);
@@ -33,6 +63,12 @@ document.addEventListener("click", (event) =>{
         publishTweet();
         return;
     }
+
+    if(event.target.dataset.replay){
+        // console.log(event.target.dataset.replay)
+        addReplay(event.target.dataset.replay);
+        return;
+    }
 });
 
 // ####################################### EVENT LISTENER END ######################################
@@ -52,7 +88,7 @@ function renderTweets(){
 
 function renderTweet(tweetData){
 
-    const comments = generateCommentsHTML(tweetData.replies);
+    const comments = generateCommentsHTML(tweetData.replies, tweetData.uuid);
 
     const tweet = `
                     <div class="separator"></div>
@@ -105,8 +141,21 @@ function renderTweet(tweetData){
     tweetSectionEl.innerHTML += tweet;
 }
 
-function generateCommentsHTML(commnets){
+function generateAddReplayHTML(id){
+    const html = `
+                    <div class="separator"></div>
+                    <div class="tweet-input-area">
+                        <img src="images/scrimbalogo.png" class="profile-pic">
+                        <textarea placeholder="Tweet Your Replay" class="tweet-replay-input" id=${id}></textarea>
+                    </div>
+                    <button class="replay-btn" data-replay="${id}">Replay</button>
+                `
+    return html;
+}
+
+function generateCommentsHTML(commnets, id){
     let commentsHTML = ``;
+    commentsHTML += generateAddReplayHTML(id);
     commnets.forEach(comment => {
 
         commentsHTML += ` 
@@ -140,7 +189,7 @@ function publishTweet(){
     if(!tweetTextArea.value) return;
 
     const tweetObj = {
-        handle: `@sirajshabbir23`,
+        handle: '@' + userName,
         profilePic: `images/scrimbalogo.png`,
         likes: 0,
         retweets: 0,
@@ -156,8 +205,30 @@ function publishTweet(){
     clearTweetTextArea(tweetTextArea);
 }
 
+function addReplay(uuid){
+    const tweetTextArea = document.querySelector(`textarea[id='${uuid}']`);
+    if(!tweetTextArea.value) return;
 
-renderTweets();
+    const tweet = tweetsData.filter((tweet) => tweet.uuid == uuid)[0];
+    const replayObj = {
+        handle: '@' + userName,
+        profilePic: `images/scrimbalogo.png`,
+        tweetText: tweetTextArea.value
+    }
+
+    tweet.replies.unshift(replayObj);
+    renderTweets();
+    showComments(uuid);
+    clearTweetTextArea(tweetTextArea);
+}
+
+function showComments(id){
+    const commentsEl = document.getElementById(id);
+    commentsEl.classList.toggle("hide-comments");
+}
+
+
+// renderTweets();
 
 
 // ######################################## CLEAR FUNCTIONS ########################################

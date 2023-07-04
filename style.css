@@ -23,10 +23,11 @@ header h1{
 
 .tweet-input-area{
     margin: 20px 0;
+    align-items: center;
 }
 
 .profile-pic{
-    float: left;
+
     width: 50px;
     border-radius: 50%;
     margin-right: 12px;
@@ -36,24 +37,42 @@ header h1{
     resize: none;
     border: none;
     background-color: white;
-    margin-top: 15px;
     font-size: 17px;
     height: 60px;
 }
 
-#tweet-input:focus{
+.tweet-replay-input{
+    resize: none;
+    border: none;
+    background-color: white;
+    font-size: 14px;
+    width: 150px;
+    overflow: hidden;
+}
+
+#tweet-input:focus, .tweet-replay-input{
     outline: none;
 }
 
-.tweet-btn{
-    width: 100%;
+.tweet-btn, .replay-btn{
     border: none;
     border-radius: 20px;
     padding: 10px 5px;
     background-color: #0F8CDF;
     font-weight: bold;
     color: white;
+}
+
+.tweet-btn{
+    width: 100%;
     font-size: 18px;
+}
+
+.replay-btn{
+    display: block;
+    margin-left: auto;
+    width: 40%;
+    font-size: 14px;
 }
 
 .separator{
@@ -103,4 +122,67 @@ header h1{
 i{
     cursor: pointer;
     font-size: 16px;
+}
+
+#dialog-box{
+    display: none;
+    position: fixed;
+    background-color: white;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 200px auto auto auto;
+
+    width: 310px;
+    height: 200px;
+    text-align: center;
+    font-family: 'Oxygen', sans-serif;
+
+    border: 3px solid black;
+    padding: 5px;
+    border-radius: 10px;
+
+    color: #0F8CDF;
+}
+
+#dialog-box h1{
+    font-size: 18px;
+}
+
+#dialog-box h2{
+    font-size: 12px;
+}
+
+form{
+    margin-top: 20px;
+}
+
+input{
+    display: block;
+    margin: 5px auto;
+    padding: 10px;
+    border: none;
+    background-color: inherit;
+    border-bottom: 1px solid black;
+    width: 100%;
+    font-size: 14px;
+}
+
+input:focus{
+    outline: none;
+}
+
+#submit-btn{
+    display: block;
+    margin: 10px 0 10px auto;
+    padding: 10px;
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+    background-color: #0F8CDF;
 }
