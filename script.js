@@ -149,10 +149,12 @@ function renderTweet(tweetID, tweetData){
 }
 
 function generateAddReplayHTML(id){
+    let profilePic = "images/scrimbalogo.png";
+    if(userName === 'siraj') profilePic = 'https://media.giphy.com/media/3oKIPcYayla0bcQr3q/giphy.gif'
     const html = `
                     <div class="separator"></div>
                     <div class="tweet-input-area">
-                        <img src="images/scrimbalogo.png" class="profile-pic">
+                        <img src=${profilePic} class="profile-pic">
                         <textarea placeholder="Tweet Your Replay" class="tweet-replay-input" id=${id}></textarea>
                     </div>
                     <button class="replay-btn" data-replay="${id}">Replay</button>
