@@ -5,12 +5,12 @@
 }
 
 body{
-    background-color: aqua;
+    background-color: #0F8CDF;
 }
 
 #app{
     width: 305px;
-    margin: 10px auto;
+    margin: 5px auto;
     padding: 15px;
     background-color: white;
     font-family: 'Oxygen', sans-serif;
