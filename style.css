@@ -23,7 +23,8 @@ header h1{
 
 .tweet-input-area{
     margin: 20px 0;
-    align-items: center;
+    /* align-items: center; */
+    /* border: 1px solid black; */
 }
 
 .profile-pic{
@@ -33,24 +34,23 @@ header h1{
     margin-right: 12px;
 }
 
-#tweet-input{
+.tweet-replay-input, #tweet-input{
     resize: none;
     border: none;
     background-color: white;
-    font-size: 17px;
-    height: 60px;
-}
-
-.tweet-replay-input{
-    resize: none;
-    border: none;
-    background-color: white;
-    font-size: 14px;
-    width: 150px;
     overflow: hidden;
 }
 
-#tweet-input:focus, .tweet-replay-input{
+#tweet-input{
+    font-size: 17px;
+}
+
+.tweet-replay-input{
+    font-size: 14px;
+    width: 150px;
+}
+
+#tweet-input:focus, .tweet-replay-input:focus{
     outline: none;
 }
 
@@ -134,7 +134,7 @@ i{
     bottom: 0;
     margin: 200px auto auto auto;
 
-    width: 310px;
+    width: 280px;
     height: 200px;
     text-align: center;
     font-family: 'Oxygen', sans-serif;
@@ -147,11 +147,11 @@ i{
 }
 
 #dialog-box h1{
-    font-size: 18px;
+    font-size: 16px;
 }
 
 #dialog-box h2{
-    font-size: 12px;
+    font-size: 11px;
 }
 
 form{
@@ -166,7 +166,7 @@ input{
     background-color: inherit;
     border-bottom: 1px solid black;
     width: 100%;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 input:focus{
@@ -183,6 +183,6 @@ input:focus{
 
     font-weight: bold;
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     background-color: #0F8CDF;
 }
