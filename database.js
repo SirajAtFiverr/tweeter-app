@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { onValue, getDatabase, ref, get, set, push, child } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { onValue, getDatabase, ref, get, set, push, child, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAz-z-io0xdivckXvaPXBZQDEDIbi3fxGc",
@@ -21,12 +21,7 @@ const tweetsInDB = ref(db, "tweets");
 function addUserToDB(userName, password){
     console.log(userName);
     set(ref(db, "users/"+ userName),
-    {
-        password: password,
-        tweets: [],
-        retweets: [],
-        likes: []
-    }
+    password
    );
 }
 
@@ -46,7 +41,7 @@ export function authenticateUser(userName, password){
 
         // if password is available and userName is in the usersOBJ
         if(password && Object.hasOwn(users, userName)){
-            if(users[userName].password === password)return true;
+            if(users[userName] === password)return true;
             alert("Invalid Password Entered");
             return false;
         }
@@ -82,8 +77,8 @@ function addTweetToDB(userName, tweetText)
     const tweetObj = {
         handle: '@' + userName,
         profilePic: `images/scrimbalogo.png`,
-        likes: 0,
-        retweets: 0,
+        likes: JSON.stringify([]),
+        retweets: JSON.stringify([]),
         tweetText: tweetText,
         replies:[
         {
@@ -97,6 +92,8 @@ function addTweetToDB(userName, tweetText)
     push(tweetsInDB, tweetObj);
 }
 
+// addTweetToDB("siraj", "tweeeet... textttt....")
+
 function addTweetReplay(tweetID, userName, replayText){
     const replayObj = {
         handle: '@' + userName,
@@ -109,13 +106,24 @@ function addTweetReplay(tweetID, userName, replayText){
 
 
 
-function likeUnlikeTweet(userName, tweetID){
-    get(child(usersInDB, `${userName}/likes`)).then((data)=>{
-        if(data.exits()){
-            
+function addRemoveFromDB(userName, tweetID, likesOrRetweeets){
+    get(child(tweetsInDB, `${tweetID}/${likesOrRetweeets}`)).then((data)=>{
+
+        let users = JSON.parse(data.val());
+        if(users.indexOf(userName) != -1){
+            users = users.filter(user => user !== userName);
+        }else{
+            users.push(userName);
         }
+        update(child(tweetsInDB, `${tweetID}`), {
+            [likesOrRetweeets]: JSON.stringify(users)
+        });
+
     })
 }
+
+// addRemoveFromDB('siraj', '-NZUOXF0VkfIH5cw0SI6', 'retweets')
+
 
 
 // addTweetReplay("-NZUAKmrVTvTvU2N-Z3w", "siraj", "twet text")
