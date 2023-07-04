@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { onValue, getDatabase, ref, get, set, push, child, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { onValue, getDatabase, ref, get, set, push, child, update, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAz-z-io0xdivckXvaPXBZQDEDIbi3fxGc",
@@ -75,7 +75,7 @@ function generatePassword() {
 function addTweetToDB(userName, tweetText)
 {
     const tweetObj = {
-        handle: '@' + userName,
+        handle: userName,
         profilePic: `images/scrimbalogo.png`,
         likes: JSON.stringify([]),
         retweets: JSON.stringify([]),
@@ -96,7 +96,7 @@ function addTweetToDB(userName, tweetText)
 
 function addTweetReplay(tweetID, userName, replayText){
     const replayObj = {
-        handle: '@' + userName,
+        handle: userName,
         profilePic: `images/scrimbalogo.png`,
         tweetText: replayText
     }
@@ -118,9 +118,24 @@ function addRemoveFromDB(userName, tweetID, likesOrRetweeets){
         update(child(tweetsInDB, `${tweetID}`), {
             [likesOrRetweeets]: JSON.stringify(users)
         });
-
-    })
+    });
 }
+
+
+function deleteTweetFromDB(userName, tweetID){
+
+    get(child(tweetsInDB, `${tweetID}/handle`)).then((data)=>{
+
+        if(data.val() === userName){
+            if(confirm("Are you really want to delete this tweet ???")) remove(ref(db, "tweets/"+tweetID));
+            return;
+        }
+
+        alert("How can you delete this tweet ?? \n It's not your.")
+    });
+}
+
+// deleteTweetFromDB('siraj', '-NZUU_dVz-W9ki_Yxu17')
 
 // addRemoveFromDB('siraj', '-NZUOXF0VkfIH5cw0SI6', 'retweets')
 
