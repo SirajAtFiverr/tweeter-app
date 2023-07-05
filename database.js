@@ -99,7 +99,7 @@ function generatePassword() {
 
 export function addTweetToDB(userName, tweetText)
 {
-    const profilePic = "images/scrimbalogo.png";
+    let profilePic = "images/scrimbalogo.png";
     if(userName === 'siraj') profilePic = "https://media.giphy.com/media/3oKIPcYayla0bcQr3q/giphy.gif";
 
     const tweetObj = {
@@ -116,7 +116,7 @@ export function addTweetToDB(userName, tweetText)
 
 export function addTweetReplay(tweetID, userName, replayText){
 
-    const profilePic = "images/scrimbalogo.png";
+    let profilePic = "images/scrimbalogo.png";
     if(userName === 'siraj') profilePic = "https://media.giphy.com/media/3oKIPcYayla0bcQr3q/giphy.gif";
 
     const replayObj = {
